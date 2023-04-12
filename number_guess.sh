@@ -34,17 +34,17 @@ GUESS() {
   UPDATE_COUNT=$($PSQL "update count_guess set guess=(guess+1) where user_id=$USER_ID")
   if [[ $GUESS_NUMBER =~ ^[0-9]+$ ]]
   then
-    if [[ $GUESS_NUMBER < $RANDOM_NUMBER ]]
+    if [[ $GUESS_NUMBER > $RANDOM_NUMBER ]]
     then
-      GUESS "Its lower than that, guess again:"
-    elif [[ $GUESS_NUMBER > $RANDOM_NUMBER ]]
+      GUESS "It's lower than that, guess again:"
+    elif [[ $GUESS_NUMBER < $RANDOM_NUMBER ]]
     then
-      GUESS "Its higher than that, guess again:"
+      GUESS "It's higher than that, guess again:"
     else
       NUMBER_OF_GUESS=$($PSQL "select guess from count_guess where user_id=$USER_ID")
       echo "You guessed it in $NUMBER_OF_GUESS tries. The secret number was $GUESS_NUMBER. Nice job!"
       BEST_GUESS=$($PSQL "select best_game from users where user_id=$USER_ID")
-      if [[ $BEST_GUESS > NUMBER_OF_GUESS ]]
+      if [[ $BEST_GUESS > NUMBER_OF_GUESS ]] || [[ $BEST_GUESS == 0 ]]
       then
         UPDATE_BEST_GAME=$($PSQL "update users set best_game=$NUMBER_OF_GUESS where user_id=$USER_ID")
       fi
